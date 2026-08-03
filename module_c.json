@@ -1,0 +1,116 @@
+{
+  "dataset": {
+    "version": "criteo-research-uplift-v2.1",
+    "rows": 13979592,
+    "treatment_ratio": 0.85,
+    "visit_rate": 0.046992,
+    "conversion_rate": 0.00292,
+    "exposure_rate_among_treated": 0.036037
+  },
+  "group_counts": [
+    {
+      "treatment": 0,
+      "n": 2096937,
+      "visits": 80105,
+      "conversions": 4063
+    },
+    {
+      "treatment": 1,
+      "n": 11882655,
+      "visits": 576824,
+      "conversions": 36711
+    }
+  ],
+  "itt": [
+    {
+      "outcome": "visits",
+      "rate_control": 0.03820095691954503,
+      "rate_treated": 0.048543360048743316,
+      "n_control": 2096937,
+      "n_treated": 11882655,
+      "events_control": 80105,
+      "events_treated": 576824,
+      "abs_lift": 0.010342403129198284,
+      "abs_ci_low": 0.010055622944060531,
+      "abs_ci_high": 0.010629183314336037,
+      "rel_lift": 0.27073675539019604,
+      "rel_ci_low": 0.26156600646999784,
+      "rel_ci_high": 0.2799741695782645,
+      "incremental_share": 0.21305494961233173,
+      "z": 70.68518392751429
+    },
+    {
+      "outcome": "conversions",
+      "rate_control": 0.0019375880152813366,
+      "rate_treated": 0.0030894610674129645,
+      "n_control": 2096937,
+      "n_treated": 11882655,
+      "events_control": 4063,
+      "events_treated": 36711,
+      "abs_lift": 0.0011518730521316279,
+      "abs_ci_low": 0.0010845045523244809,
+      "abs_ci_high": 0.0012192415519387749,
+      "rel_lift": 0.5944881177252619,
+      "rel_ci_low": 0.5436966599472159,
+      "rel_ci_high": 0.6469507407329504,
+      "incremental_share": 0.3728394781476165,
+      "z": 33.51226743420042
+    }
+  ],
+  "exposure_conditioning": [
+    {
+      "grp": "control",
+      "n": 2096937,
+      "visits": 80105,
+      "conversions": 4063
+    },
+    {
+      "grp": "excluded",
+      "n": 11454443,
+      "visits": 399314,
+      "conversions": 13680
+    },
+    {
+      "grp": "exposed",
+      "n": 428212,
+      "visits": 177510,
+      "conversions": 23031
+    }
+  ],
+  "late": [
+    {
+      "outcome": "visits",
+      "never_taker_rate": 0.034861057844541195,
+      "control_rate": 0.03820095691954503,
+      "complier_baseline": 0.12754077799338376,
+      "exposed_rate": 0.4145376589166114,
+      "late": 0.2869968809232276,
+      "late_check_itt_over_c": 0.2869940097454917,
+      "incremental_share_exposed": 0.6923300567511529
+    },
+    {
+      "outcome": "conversions",
+      "never_taker_rate": 0.0011942963966034839,
+      "control_rate": 0.0019375880152813366,
+      "complier_baseline": 0.02182008707501325,
+      "exposed_rate": 0.053784106937685074,
+      "late": 0.03196401986267182,
+      "late_check_itt_over_c": 0.031963622169759634,
+      "incremental_share_exposed": 0.5943023261445193
+    }
+  ],
+  "paper_reproduction": {
+    "target_visit_rel_lift": 0.27,
+    "measured_visit_rel_lift": 0.27073675539019604,
+    "target_conversion_rel_lift": 0.594,
+    "measured_conversion_rel_lift": 0.5944881177252619,
+    "status": "reproduced"
+  },
+  "notes": [
+    "ITT relative lift reproduces the published figures to three significant digits: 27.07% on visits, 59.45% on conversions.",
+    "Only 37.3% of conversions observed in the treated group are incremental; 62.7% would have occurred without the advertising.",
+    "Only 3.6% of assigned users were actually exposed. Comparing exposed users against control inflates the conversion lift from 59% to 2676%, a factor of 45.",
+    "exposure is a post-treatment variable. Conditioning on it is the same error class as conditioning on total sequence length in module A.",
+    "One-sided noncompliance identifies the LATE among compliers without conditioning on exposure."
+  ]
+}

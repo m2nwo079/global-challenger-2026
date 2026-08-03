@@ -1,0 +1,243 @@
+{
+  "assumptions": {
+    "alpha": 0.05,
+    "power": 0.8,
+    "baseline_ctr": 0.3612,
+    "baseline_conversion": 0.003,
+    "baseline_visit": 0.047,
+    "daily_eligible_users_assumed": 1000000,
+    "note": "Baseline rates come from modules A and C. Daily user volume is an illustrative assumption, not an estimate of any specific platform."
+  },
+  "sample_size": [
+    {
+      "baseline": "CTR (measured, module A)",
+      "baseline_rate": 0.3612,
+      "mde_relative": 0.01,
+      "n_per_arm": 278221,
+      "n_total": 556442
+    },
+    {
+      "baseline": "CTR (measured, module A)",
+      "baseline_rate": 0.3612,
+      "mde_relative": 0.02,
+      "n_per_arm": 69703,
+      "n_total": 139405
+    },
+    {
+      "baseline": "CTR (measured, module A)",
+      "baseline_rate": 0.3612,
+      "mde_relative": 0.05,
+      "n_per_arm": 11221,
+      "n_total": 22441
+    },
+    {
+      "baseline": "CTR (measured, module A)",
+      "baseline_rate": 0.3612,
+      "mde_relative": 0.1,
+      "n_per_arm": 2832,
+      "n_total": 5663
+    },
+    {
+      "baseline": "CTR (measured, module A)",
+      "baseline_rate": 0.3612,
+      "mde_relative": 0.2,
+      "n_per_arm": 720,
+      "n_total": 1439
+    },
+    {
+      "baseline": "Conversion rate (module C)",
+      "baseline_rate": 0.003,
+      "mde_relative": 0.01,
+      "n_per_arm": 52428942,
+      "n_total": 104857884
+    },
+    {
+      "baseline": "Conversion rate (module C)",
+      "baseline_rate": 0.003,
+      "mde_relative": 0.02,
+      "n_per_arm": 13172247,
+      "n_total": 26344493
+    },
+    {
+      "baseline": "Conversion rate (module C)",
+      "baseline_rate": 0.003,
+      "mde_relative": 0.05,
+      "n_per_arm": 2138763,
+      "n_total": 4277525
+    },
+    {
+      "baseline": "Conversion rate (module C)",
+      "baseline_rate": 0.003,
+      "mde_relative": 0.1,
+      "n_per_arm": 547690,
+      "n_total": 1095380
+    },
+    {
+      "baseline": "Conversion rate (module C)",
+      "baseline_rate": 0.003,
+      "mde_relative": 0.2,
+      "n_per_arm": 143421,
+      "n_total": 286841
+    },
+    {
+      "baseline": "Visit rate (module C)",
+      "baseline_rate": 0.047,
+      "mde_relative": 0.01,
+      "n_per_arm": 3198097,
+      "n_total": 6396193
+    },
+    {
+      "baseline": "Visit rate (module C)",
+      "baseline_rate": 0.047,
+      "mde_relative": 0.02,
+      "n_per_arm": 803303,
+      "n_total": 1606606
+    },
+    {
+      "baseline": "Visit rate (module C)",
+      "baseline_rate": 0.047,
+      "mde_relative": 0.05,
+      "n_per_arm": 130340,
+      "n_total": 260680
+    },
+    {
+      "baseline": "Visit rate (module C)",
+      "baseline_rate": 0.047,
+      "mde_relative": 0.1,
+      "n_per_arm": 33338,
+      "n_total": 66676
+    },
+    {
+      "baseline": "Visit rate (module C)",
+      "baseline_rate": 0.047,
+      "mde_relative": 0.2,
+      "n_per_arm": 8709,
+      "n_total": 17418
+    }
+  ],
+  "days_needed": [
+    {
+      "rollout": "3%",
+      "mde": "2%",
+      "days_ctr": 4.6,
+      "days_conv": 878.1
+    },
+    {
+      "rollout": "3%",
+      "mde": "5%",
+      "days_ctr": 0.7,
+      "days_conv": 142.6
+    },
+    {
+      "rollout": "3%",
+      "mde": "10%",
+      "days_ctr": 0.2,
+      "days_conv": 36.5
+    },
+    {
+      "rollout": "3%",
+      "mde": "20%",
+      "days_ctr": 0.0,
+      "days_conv": 9.6
+    },
+    {
+      "rollout": "5%",
+      "mde": "2%",
+      "days_ctr": 2.8,
+      "days_conv": 526.9
+    },
+    {
+      "rollout": "5%",
+      "mde": "5%",
+      "days_ctr": 0.4,
+      "days_conv": 85.6
+    },
+    {
+      "rollout": "5%",
+      "mde": "10%",
+      "days_ctr": 0.1,
+      "days_conv": 21.9
+    },
+    {
+      "rollout": "5%",
+      "mde": "20%",
+      "days_ctr": 0.0,
+      "days_conv": 5.7
+    },
+    {
+      "rollout": "10%",
+      "mde": "2%",
+      "days_ctr": 1.4,
+      "days_conv": 263.4
+    },
+    {
+      "rollout": "10%",
+      "mde": "5%",
+      "days_ctr": 0.2,
+      "days_conv": 42.8
+    },
+    {
+      "rollout": "10%",
+      "mde": "10%",
+      "days_ctr": 0.1,
+      "days_conv": 11.0
+    },
+    {
+      "rollout": "10%",
+      "mde": "20%",
+      "days_ctr": 0.0,
+      "days_conv": 2.9
+    },
+    {
+      "rollout": "50%",
+      "mde": "2%",
+      "days_ctr": 0.3,
+      "days_conv": 52.7
+    },
+    {
+      "rollout": "50%",
+      "mde": "5%",
+      "days_ctr": 0.0,
+      "days_conv": 8.6
+    },
+    {
+      "rollout": "50%",
+      "mde": "10%",
+      "days_ctr": 0.0,
+      "days_conv": 2.2
+    },
+    {
+      "rollout": "50%",
+      "mde": "20%",
+      "days_ctr": 0.0,
+      "days_conv": 0.6
+    }
+  ],
+  "peeking_false_positive_rate": [
+    {
+      "looks": 1,
+      "fpr_ctr": 0.04325,
+      "fpr_conv": 0.04933333333333333
+    },
+    {
+      "looks": 2,
+      "fpr_ctr": 0.08725,
+      "fpr_conv": 0.09866666666666667
+    },
+    {
+      "looks": 5,
+      "fpr_ctr": 0.14225,
+      "fpr_conv": 0.13266666666666665
+    },
+    {
+      "looks": 10,
+      "fpr_ctr": 0.19425,
+      "fpr_conv": 0.176
+    },
+    {
+      "looks": 20,
+      "fpr_ctr": 0.2385,
+      "fpr_conv": 0.25066666666666665
+    }
+  ]
+}
