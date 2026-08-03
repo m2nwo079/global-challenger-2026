@@ -1,0 +1,12 @@
+data/
+*.db
+*.db-journal
+*.tsv
+*.tsv.gz
+*.zip
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store
+
+interview/
+*.docx
