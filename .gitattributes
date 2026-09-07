@@ -1,0 +1,3 @@
+# Exclude the standalone dashboard page from GitHub language stats.
+# It is a presentation layer, not the analysis. The analysis is Python.
+index.html linguist-documentation
