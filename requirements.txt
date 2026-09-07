@@ -1,2 +1,2 @@
-pandas
-statsmodels
+pandas==3.0.5
+statsmodels==0.15.0
