@@ -7,9 +7,22 @@
 ![scikit-uplift](https://img.shields.io/badge/scikit--uplift-0.5.1-1D9E75?style=flat)
 ![Colab](https://img.shields.io/badge/Google%20Colab-F9AB00?style=flat&logo=googlecolab&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-3DA639?style=flat)
+[![Live report](https://img.shields.io/badge/Live%20report-Open-1E40AF?style=flat&logo=googlechrome&logoColor=white)](https://m2nwo079.github.io/global-challenger-2026/)
 
 Ad incrementality analysis - answering **"did the purchase really happen
 because of the ad?"** using Criteo's randomized incrementality-test data.
+
+**Live report:** https://m2nwo079.github.io/global-challenger-2026/
+
+## Motivation
+
+This project began as a follow-up to a departmental field-research competition
+(Global Challenger). During an in-depth interview with a practitioner on an ad
+platform's ad domain, one question kept coming back without a clean answer:
+of the purchases a campaign reports as "ad-driven," how many did the ad
+actually cause? The interviewee could only describe it qualitatively. We built
+this analysis to turn that qualitative uncertainty into a quantitative answer,
+using public randomized-experiment data.
 
 ## Background
 
@@ -69,3 +82,4 @@ Criteo Uplift Prediction Dataset v2.1
 > Diemert Eustache, Betlei Artem, Christophe Renaudin, Massih-Reza Amini.
 > "A Large Scale Benchmark for Uplift Modeling."
 > Proceedings of the AdKDD and TargetAd Workshop, KDD, 2018.
+> Paper (PDF): http://papers.adkdd.org/2018/papers/adkdd18-diemert-large-scale.pdf
