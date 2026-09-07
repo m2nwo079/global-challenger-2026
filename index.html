@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Did the ad cause it? — Ad Incrementality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&family=Gothic+A1:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1E40AF; --secondary:#3B82F6; --accent:#B45309;
+  --bg:#F8FAFC; --panel:#FFFFFF; --ink:#0F1E3D; --muted:#5B6B85;
+  --border:#DBEAFE; --rule:#E4EBF5; --danger:#B91C1C;
+  --sans:'Fira Sans',system-ui,sans-serif; --mono:'Fira Code',monospace;
+}
+body.ko{ --sans:'Gothic A1','Fira Sans',sans-serif; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.6;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body.ko{word-break:keep-all;overflow-wrap:break-word}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+h1{font-size:clamp(30px,5vw,52px);font-weight:700;line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+h2{font-size:clamp(20px,2.6vw,26px);font-weight:600;letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+p{margin:0 0 14px;max-width:64ch;color:var(--ink);text-wrap:pretty}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+a{color:var(--primary)}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--rule)}
+.brand{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--muted)}
+.toggles{display:flex;gap:10px}
+.tog{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.tog button{border:0;background:var(--panel);color:var(--muted);font-family:var(--sans);
+  font-size:13px;font-weight:600;padding:7px 12px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+.tog button.on{background:var(--primary);color:#fff}
+
+.hero{padding:52px 0 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent);margin:0 0 18px;font-weight:500}
+.lede{font-size:clamp(18px,2.2vw,21px);line-height:1.55;max-width:52ch;color:var(--muted);text-wrap:pretty}
+
+section{padding:44px 0;border-bottom:1px solid var(--rule)}
+.kicker{font-family:var(--mono);font-size:13px;color:var(--secondary);font-weight:500;margin:0 0 10px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 8px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat .n{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1}
+.stat .n.good{color:var(--primary)}
+.stat .l{font-size:13.5px;color:var(--muted);margin-top:8px}
+@media(max-width:720px){.stats{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;margin-top:22px}
+.slrow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.slval{font-family:var(--mono);font-weight:600;color:var(--primary);font-size:18px}
+input[type=range]{width:100%;accent-color:var(--primary);height:26px;cursor:pointer}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.readout .box{border:1px solid var(--rule);border-radius:10px;padding:16px;background:var(--bg)}
+.readout .box .rn{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.readout .box.late .rn{color:var(--primary)}
+.readout .box.naive .rn{color:var(--danger)}
+.readout .box .rl{font-size:13px;color:var(--muted);margin-top:6px}
+.note{font-size:14px;color:var(--muted);margin-top:16px}
+
+.bars{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.bar{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:14px}
+.bar .bl{font-size:14px;font-weight:500}
+.bar .track{background:var(--bg);border:1px solid var(--rule);border-radius:6px;height:26px;overflow:hidden}
+.bar .fill{height:100%;border-radius:5px 0 0 5px;transition:width .5s ease}
+.bar .fill.itt{background:var(--primary)}
+.bar .fill.late{background:var(--secondary)}
+.bar .fill.naive{background:var(--danger)}
+.bar .bv{font-family:var(--mono);font-size:14px;font-weight:600;min-width:70px;text-align:right}
+@media(max-width:600px){.bar{grid-template-columns:96px 1fr auto}}
+
+.tabs{display:inline-flex;gap:6px;margin:8px 0 18px}
+.tabs button{border:1px solid var(--border);background:var(--panel);color:var(--muted);
+  font-family:var(--sans);font-weight:600;font-size:14px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s}
+.tabs button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.qwrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px}
+.qmeta{font-family:var(--mono);font-size:14px;color:var(--muted);margin-top:10px}
+
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:15px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:600}
+td .mono{font-size:13.5px}
+footer{padding:34px 0 60px;color:var(--muted);font-size:14px}
+
+/* language + level switching:
+   4 combos via body.ko/.en and body.easy/.pro. Show only the matching span. */
+[data-en],[data-ko-pro],[data-en-pro]{display:none}
+body.en [data-ko]{display:none}
+body.en [data-en]{display:revert}
+/* pro overrides: when body.pro and a pro variant exists, swap it in */
+body.ko.pro [data-ko-easy]{display:none}
+body.ko.pro [data-ko-pro]{display:revert}
+body.en.pro [data-en-easy]{display:none}
+body.en.pro [data-en-pro]{display:revert}
+.svgwrap svg{width:100%;height:auto;display:block}
+</style>
+</head>
+<body class="ko easy">
+<div class="wrap">
+
+  <div class="top">
+    <span class="brand">global-challenger-2026</span>
+    <span class="toggles">
+      <span class="tog">
+        <button id="btEasy" class="on" onclick="setLevel('easy')"><span data-ko>쉽게</span><span data-en>Simple</span></button>
+        <button id="btPro" onclick="setLevel('pro')"><span data-ko>전문</span><span data-en>Expert</span></button>
+      </span>
+      <span class="tog">
+        <button id="btKo" class="on" onclick="setLang('ko')">한국어</button>
+        <button id="btEn" onclick="setLang('en')">EN</button>
+      </span>
+    </span>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow mono">Criteo incrementality · randomized trial</p>
+    <h1><span data-ko>이 구매는 정말 광고 때문일까?</span><span data-en>Did the ad actually cause it?</span></h1>
+    <p class="lede">
+      <span data-ko data-ko-easy>광고를 본 사람만 놓고 비교하면 광고 효과가 45배나 커 보입니다. 하지만 광고를 무작위로 튼 실험과 비교하면 진짜 효과가 드러납니다. 아래에서 직접 만져보며 확인해 보세요.</span>
+      <span data-ko-pro>노출된 사용자만 비교하면 효과가 45배 부풀려집니다. 무작위 배정을 도구변수로 삼으면 진짜 인과 효과를 복원할 수 있습니다. 아래에서 직접 확인해 보세요.</span>
+      <span data-en data-en-easy>Comparing only people who saw the ad makes it look 45× stronger than it is. Comparing against a random experiment reveals the real effect. Try it below.</span>
+      <span data-en-pro>Conditioning on exposed users inflates the effect 45×. Using random assignment as an instrument recovers the true causal effect. Explore it below.</span>
+    </p>
+  </div>
+
+  <section>
+    <p class="kicker mono">01 · <span data-ko data-ko-easy>진짜 효과</span><span data-ko-pro>ITT</span><span data-en data-en-easy>Real effect</span><span data-en-pro>ITT</span></p>
+    <h2><span data-ko>광고를 튼 것의 진짜 효과</span><span data-en>The true effect of showing ads</span></h2>
+    <p class="muted">
+      <span data-ko data-ko-easy>누구에게 광고를 틀지 동전 던지듯 무작위로 정했기 때문에, 두 집단의 차이는 “우연한 상관”이 아니라 “광고가 만든 진짜 차이”입니다. 발표된 논문 숫자와도 정확히 같습니다.</span>
+      <span data-ko-pro>처치(광고 배정)가 무작위이므로 이 차이는 상관이 아니라 인과입니다. 발표된 논문 값과 정확히 일치합니다.</span>
+      <span data-en data-en-easy>Who got ads was decided at random (like a coin flip), so the gap between the groups is a real effect of the ad, not a coincidence. It matches the published paper exactly.</span>
+      <span data-en-pro>Assignment is randomized, so this difference is causal, not correlational. It matches the published figure exactly.</span>
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="n">0.194%</div><div class="l"><span data-ko>광고 안 튼 그룹 구매율</span><span data-en>No-ads group purchase rate</span></div></div>
+      <div class="stat"><div class="n">0.309%</div><div class="l"><span data-ko>광고 튼 그룹 구매율</span><span data-en>Ads group purchase rate</span></div></div>
+      <div class="stat"><div class="n good">+59.4%</div><div class="l"><span data-ko data-ko-easy>광고로 늘어난 구매 · 논문값 일치</span><span data-ko-pro>상대 리프트 · 논문값 59.45% 일치</span><span data-en data-en-easy>More purchases from ads · matches paper</span><span data-en-pro>Relative lift · matches 59.45%</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker mono">02 · <span data-ko data-ko-easy>흔한 착각</span><span data-ko-pro>The trap</span><span data-en data-en-easy>Common mistake</span><span data-en-pro>The trap</span></p>
+    <h2><span data-ko data-ko-easy>“광고 본 사람만” 비교하면 생기는 일</span><span data-ko-pro>노출로 조건화하면 벌어지는 일</span><span data-en data-en-easy>What "only people who saw it" does</span><span data-en-pro>What conditioning on exposure does</span></h2>
+    <p class="muted">
+      <span data-ko data-ko-easy>슬라이더로 “실제로 광고를 본 사람의 비율”을 바꿔 보세요. 광고를 본 사람이 적을수록, 정직한 값과 부풀린 값이 얼마나 벌어지는지 보입니다.</span>
+      <span data-ko-pro>슬라이더로 “실제 노출된 비율”을 바꿔 보세요. 노출된 사람이 적을수록(자기선택이 심할수록) 두 값이 어떻게 갈리는지 보입니다.</span>
+      <span data-en data-en-easy>Move the slider to change how many people actually saw the ad. The fewer who saw it, the more the honest number and the inflated number split apart.</span>
+      <span data-en-pro>Move the slider to change the share actually exposed. The fewer are exposed (stronger self-selection), the more the two numbers diverge.</span>
+    </p>
+    <div class="card">
+      <div class="slrow">
+        <span><span data-ko data-ko-easy>실제로 광고를 본 사람 비율</span><span data-ko-pro>실제 노출된 비율</span><span data-en data-en-easy>Share who actually saw the ad</span><span data-en-pro>Share actually exposed</span></span>
+        <span class="slval"><span id="compVal">3.6</span>%</span>
+      </div>
+      <input type="range" id="comp" min="1" max="15" step="0.1" value="3.6" oninput="updateSlider()">
+      <div class="readout">
+        <div class="box late">
+          <div class="rn"><span id="lateVal">3.19</span> pp</div>
+          <div class="rl"><span data-ko data-ko-easy>정직한 값 · 광고 본 사람 1명당 실제 효과</span><span data-ko-pro>LATE · 노출자 1인당 정직한 효과 (도구변수)</span><span data-en data-en-easy>Honest value · real effect per person who saw it</span><span data-en-pro>LATE · honest per-exposed effect (IV)</span></div>
+        </div>
+        <div class="box naive">
+          <div class="rn">+<span id="naiveVal">2672</span>%</div>
+          <div class="rl"><span data-ko data-ko-easy>부풀린 값 · 광고 본 사람만 그냥 비교</span><span data-ko-pro>Naive · 노출자를 그냥 비교한 부풀린 값</span><span data-en data-en-easy>Inflated value · just comparing viewers</span><span data-en-pro>Naive · inflated exposed-vs-control</span></div>
+        </div>
+      </div>
+      <p class="note"><span data-ko data-ko-easy>실제로 광고를 본 사람은 3.6%뿐입니다. 이 지점에서 흔한 비교는 정직한 값보다 약 45배 부풀려집니다.</span><span data-ko-pro>실측 노출 비율은 3.6%입니다. 이 지점에서 Naive는 정직한 ITT보다 약 45배 부풀려집니다.</span><span data-en data-en-easy>Only 3.6% actually saw the ad. There, the common comparison is ~45× the honest number.</span><span data-en-pro>The observed exposure share is 3.6%. There, the naive comparison is ~45× the honest ITT.</span></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker mono">03 · <span data-ko data-ko-easy>세 가지 비교</span><span data-ko-pro>Three views</span><span data-en data-en-easy>Three views</span><span data-en-pro>Three views</span></p>
+    <h2><span data-ko>세 가지 방식 비교</span><span data-en>Three estimates side by side</span></h2>
+    <p class="muted"><span data-ko data-ko-easy>같은 데이터를 세 가지로 계산했습니다. 두 개는 정직하고(서로 다른 질문에 답함), 하나는 부풀려진 거짓입니다.</span><span data-ko-pro>같은 데이터, 세 가지 계산. 두 개는 정직하고(다른 질문에 답함), 하나는 거짓입니다.</span><span data-en data-en-easy>Same data, three ways. Two are honest (they answer different questions); one is inflated.</span><span data-en-pro>Same data, three computations. Two are honest (answering different questions); one is not.</span></p>
+    <div class="bars">
+      <div class="bar"><span class="bl">ITT</span><div class="track"><div class="fill itt" style="width:2.2%"></div></div><span class="bv">+59.4%</span></div>
+      <div class="bar"><span class="bl">LATE</span><div class="track"><div class="fill late" style="width:6%"></div></div><span class="bv" id="bLate">+165%</span></div>
+      <div class="bar"><span class="bl">Naive</span><div class="track"><div class="fill naive" style="width:100%"></div></div><span class="bv">+2672%</span></div>
+    </div>
+    <p class="note"><span data-ko data-ko-easy>ITT는 “광고를 튼 것”의 효과, LATE는 “실제로 본 사람”의 효과 — 둘 다 정직합니다. Naive만 “원래 살 사람들”이 섞여 부풀려진 거짓입니다.</span><span data-ko-pro>ITT는 “배정”의 효과, LATE는 “실제 노출자”의 효과 — 둘 다 정직합니다. Naive만 자기선택 편향으로 부풀려진 거짓입니다.</span><span data-en data-en-easy>ITT is the effect of showing ads; LATE the effect on people who saw them — both honest. Only naive is inflated by mixing in people who would have bought anyway.</span><span data-en-pro>ITT is the effect of assignment; LATE the effect on the exposed — both honest. Only naive is inflated by self-selection.</span></p>
+  </section>
+
+  <section>
+    <p class="kicker mono">04 · <span data-ko data-ko-easy>누구에게</span><span data-ko-pro>Targeting</span><span data-en data-en-easy>Who to target</span><span data-en-pro>Targeting</span></p>
+    <h2><span data-ko>누구에게 광고가 효과 있었나</span><span data-en>Who the ad actually moved</span></h2>
+    <p class="muted"><span data-ko data-ko-easy>모델이 “광고에 반응할 만한 사람”을 앞줄에 세웁니다. 파란 선이 회색 점선 위로 솟을수록, 소수만 골라 광고해도 성과가 크다는 뜻입니다.</span><span data-ko-pro>업리프트 모델이 반응 잘할 사람을 상위에 배치합니다. 곡선이 대각선 위로 솟을수록 타깃팅이 잘 됩니다.</span><span data-en data-en-easy>The model puts likely responders first. The more the blue line rises above the gray dashes, the more you gain by targeting just a few.</span><span data-en-pro>An uplift model ranks responsive users first. The higher the curve bulges over the diagonal, the better targeting works.</span></p>
+    <div class="tabs">
+      <button id="tabVisit" class="on" onclick="setQini('visit')"><span data-ko>방문</span><span data-en>Visit</span></button>
+      <button id="tabConv" onclick="setQini('conversion')"><span data-ko>구매</span><span data-en>Purchase</span></button>
+    </div>
+    <div class="qwrap">
+      <div class="svgwrap" id="qini"></div>
+      <div class="qmeta">Qini AUC = <span id="qauc">0.0855</span> · <span data-ko data-ko-easy>상위 20%만 골라도 성과 대부분 확보</span><span data-ko-pro>상위 20% 타깃 시 성과 대부분 확보</span><span data-en data-en-easy>top 20% captures most of the gain</span><span data-en-pro>top 20% captures most of the gain</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker mono">Summary</p>
+    <h2><span data-ko>네 단계 요약</span><span data-en>Four steps</span></h2>
+    <table>
+      <thead><tr>
+        <th><span data-ko>단계</span><span data-en>Step</span></th>
+        <th><span data-ko>질문</span><span data-en>Question</span></th>
+        <th><span data-ko>결과</span><span data-en>Result</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="mono">1 · ITT</td><td><span data-ko>광고를 튼 효과?</span><span data-en>Effect of showing ads?</span></td><td>+59.4% <span class="muted">(=59.45%)</span></td></tr>
+        <tr><td class="mono">2 · Naive</td><td><span data-ko>본 사람만 비교하면?</span><span data-en>Compare viewers only?</span></td><td>+2672% <span class="muted">(~45×)</span></td></tr>
+        <tr><td class="mono">3 · LATE</td><td><span data-ko>본 사람의 효과?</span><span data-en>Effect on viewers?</span></td><td><span data-ko>부풀림 없이 복원</span><span data-en>recovered, no inflation</span></td></tr>
+        <tr><td class="mono">4 · Qini</td><td><span data-ko>누구를 타깃?</span><span data-en>Whom to target?</span></td><td><span data-ko>상위 소수에 효과 집중</span><span data-en>effect in a targetable few</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p><span data-ko>데이터: Criteo Uplift Prediction Dataset v2.1 (CC BY-NC-SA 4.0). 코드: MIT. Diemert et al., AdKDD 2018.</span><span data-en>Data: Criteo Uplift Prediction Dataset v2.1 (CC BY-NC-SA 4.0). Code: MIT. Diemert et al., AdKDD 2018.</span></p>
+  </footer>
+</div>
+
+<script>
+const ITT_ABS_PP = 0.115;
+const NAIVE_REL = 2672;
+const ITT_REL = 59.4;
+const QINI = {visit:{auc:'0.0855', pts:[0,.28,.46,.58,.66,.72,.77,.82,.86,.90,.94,.97,1.0]},
+              conversion:{auc:'0.1184', pts:[0,.32,.50,.60,.68,.74,.79,.83,.87,.91,.94,.97,1.0]}};
+
+function setLang(l){
+  document.body.classList.toggle('en', l==='en');
+  document.body.classList.toggle('ko', l==='ko');
+  document.documentElement.lang=l;
+  document.getElementById('btKo').classList.toggle('on', l==='ko');
+  document.getElementById('btEn').classList.toggle('on', l==='en');
+}
+function setLevel(v){
+  document.body.classList.toggle('pro', v==='pro');
+  document.body.classList.toggle('easy', v==='easy');
+  document.getElementById('btEasy').classList.toggle('on', v==='easy');
+  document.getElementById('btPro').classList.toggle('on', v==='pro');
+}
+function updateSlider(){
+  const c = parseFloat(document.getElementById('comp').value);
+  document.getElementById('compVal').textContent = c.toFixed(1);
+  const late = (ITT_ABS_PP / (c/100));
+  document.getElementById('lateVal').textContent = late.toFixed(2);
+  const lateRel = (late/ITT_ABS_PP)*ITT_REL;
+  document.getElementById('bLate').textContent = '+'+Math.round(lateRel)+'%';
+  const w = Math.max(2, Math.min(100, (lateRel/NAIVE_REL)*100));
+  document.querySelector('.fill.late').style.width = w+'%';
+}
+function drawQini(key){
+  const q=QINI[key]; const pts=q.pts; const W=680,H=300,pad=44;
+  const n=pts.length; const maxY=Math.max(...pts);
+  let d='';
+  pts.forEach((v,i)=>{
+    const x=pad+(W-2*pad)*(i/(n-1));
+    const y=H-pad-(H-2*pad)*(v/maxY);
+    d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+  });
+  const x0=pad,y0=H-pad,x1=W-pad,y1=H-pad-(H-2*pad)*(pts[n-1]/maxY);
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Qini curve">
+    <line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="#CBD5E1" stroke-width="1"/>
+    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H-pad}" stroke="#CBD5E1" stroke-width="1"/>
+    <line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5"/>
+    <path d="${d}" fill="none" stroke="#1E40AF" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="${W-pad}" y="${H-14}" text-anchor="end" font-family="Fira Code, monospace" font-size="12" fill="#5B6B85">fraction targeted →</text>
+  </svg>`;
+  document.getElementById('qini').innerHTML=svg;
+  document.getElementById('qauc').textContent=q.auc;
+}
+function setQini(key){
+  document.getElementById('tabVisit').classList.toggle('on', key==='visit');
+  document.getElementById('tabConv').classList.toggle('on', key==='conversion');
+  drawQini(key);
+}
+updateSlider();
+drawQini('visit');
+</script>
+</body>
+</html>
