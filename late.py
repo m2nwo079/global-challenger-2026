@@ -34,10 +34,24 @@
 #        Under one-sided noncompliance the compliers are exactly the exposed
 #        among the treated, so LATE here is the effect ON THE EXPOSED.
 #
+#  --- Uncertainty (95% confidence intervals) ---
+#   ITT is a difference of two proportions; its standard error is the usual
+#   sqrt(p_t(1-p_t)/n_t + p_c(1-p_c)/n_c). LATE is the ratio ITT/first-stage,
+#   so its standard error comes from the DELTA METHOD, which also accounts for
+#   the within-treated correlation between Y (conversion) and D (exposure):
+#
+#       Var(LATE) ~= Var(N)/D^2 + N^2 Var(D)/D^4 - 2 N Cov(N,D)/D^3
+#
+#   with N = ITT on Y, D = ITT on D. This is the standard Wald/2SLS SE for a
+#   single binary instrument. It is a large-sample normal approximation; it is
+#   reliable here (n in the millions) but would be fragile with a weak first
+#   stage. All inputs are computed from the data, none are hard-coded.
+#
 #  How to run: in the VS Code terminal  ->  python late.py
 #  (Run 'python analyze.py' once first so the data is already downloaded.)
 # ============================================================
 
+import math
 import os
 
 import pandas as pd
@@ -50,6 +64,9 @@ DATA_PATH = os.path.join("data", "criteo-uplift-v2.1.csv.gz")
 # way (MATCH/MISMATCH), never hard-coded into the result.
 CONTROL_EXPOSURE_TOL = 1e-4  # 0.01%
 
+# Normal quantile for a two-sided 95% interval (a math constant, not data).
+Z95 = 1.959964
+
 
 def load_data():
     if not os.path.exists(DATA_PATH):
@@ -61,6 +78,28 @@ def load_data():
     df = pd.read_csv(DATA_PATH, usecols=cols)
     print(f"      Done! {len(df):,} rows total")
     return df
+
+
+def group_stats(sub):
+    """First and second sampling moments for one assignment arm.
+
+    Y = conversion (outcome), D = exposure (treatment we care about).
+    Returns each arm's mean rates and the sampling (co)variances of those
+    means, so ITT, LATE, and their standard errors are all built from the
+    same numbers (each quantity defined once)."""
+    n = len(sub)
+    p_y = sub["conversion"].mean()
+    p_d = sub["exposure"].mean()
+    p_yd = (sub["conversion"] * sub["exposure"]).mean()  # P(Y=1 and D=1)
+    return {
+        "n": n,
+        "p_y": p_y,
+        "p_d": p_d,
+        # sampling variance of each arm's mean, and their covariance
+        "var_ybar": p_y * (1 - p_y) / n,
+        "var_dbar": p_d * (1 - p_d) / n,
+        "cov_bar": (p_yd - p_y * p_d) / n,
+    }
 
 
 def verify_iv_assumptions(exposure_treated, exposure_control):
@@ -92,6 +131,36 @@ def verify_iv_assumptions(exposure_treated, exposure_control):
     return first_stage, one_sided_ok
 
 
+def wald_confidence_intervals(t, c):
+    """Point estimates and 95% CIs for ITT and LATE from the two arms' stats.
+
+    N = ITT on Y = p_y(treated) - p_y(control)
+    D = first stage = p_d(treated) - p_d(control)
+    LATE = N / D, with a delta-method SE that includes Cov(N, D)."""
+    n_hat = t["p_y"] - c["p_y"]                 # ITT (absolute), numerator
+    d_hat = t["p_d"] - c["p_d"]                 # first stage, denominator
+
+    var_n = t["var_ybar"] + c["var_ybar"]       # arms independent -> variances add
+    var_d = t["var_dbar"] + c["var_dbar"]
+    cov_nd = t["cov_bar"] + c["cov_bar"]        # cross-arm cov is 0 by design
+
+    se_itt = math.sqrt(var_n)
+
+    late = n_hat / d_hat
+    var_late = (var_n / d_hat**2
+                + n_hat**2 * var_d / d_hat**4
+                - 2 * n_hat * cov_nd / d_hat**3)
+    se_late = math.sqrt(var_late) if var_late > 0 else float("nan")
+
+    return {
+        "itt": n_hat, "itt_se": se_itt,
+        "itt_lo": n_hat - Z95 * se_itt, "itt_hi": n_hat + Z95 * se_itt,
+        "first_stage": d_hat,
+        "late": late, "late_se": se_late,
+        "late_lo": late - Z95 * se_late, "late_hi": late + Z95 * se_late,
+    }
+
+
 def main():
     print("=" * 56)
     print(" Ad Incrementality Analysis - Step 3: LATE (effect on the exposed)")
@@ -103,24 +172,20 @@ def main():
     is_control = df["treatment"] == 0
     is_treated = df["treatment"] == 1
 
-    # Outcome rates by assignment (Y)
-    p_control = df.loc[is_control, "conversion"].mean()
-    p_treated = df.loc[is_treated, "conversion"].mean()
+    # One pass of moments per arm; everything below is derived from these.
+    t = group_stats(df.loc[is_treated, ["conversion", "exposure"]])
+    c = group_stats(df.loc[is_control, ["conversion", "exposure"]])
 
-    # ITT in absolute terms (percentage points), same comparison as Step 1
-    itt_abs = p_treated - p_control
-
-    # Exposure rates by assignment (D) -- BOTH arms, computed from data
-    exposure_treated = df.loc[is_treated, "exposure"].mean()   # compliance
-    exposure_control = df.loc[is_control, "exposure"].mean()   # should be ~0
+    p_control, p_treated = c["p_y"], t["p_y"]
+    exposure_treated, exposure_control = t["p_d"], c["p_d"]
 
     # Verify the assumptions and get the GENERAL Wald denominator (first stage)
     first_stage, one_sided_ok = verify_iv_assumptions(
         exposure_treated, exposure_control)
 
-    # Wald / LATE using the general denominator (correct whether or not
-    # control exposure is exactly 0). When E[D|Z=0]=0 it equals ITT/compliance.
-    late_abs = itt_abs / first_stage
+    # Point estimates + 95% CIs (delta method for the LATE ratio)
+    ci = wald_confidence_intervals(t, c)
+    itt_abs, late_abs = ci["itt"], ci["late"]
 
     # For context: the naive exposed-vs-control absolute gap (the inflated one)
     p_exposed = df.loc[df["exposure"] == 1, "conversion"].mean()
@@ -128,14 +193,16 @@ def main():
 
     print(f"\n  Control conversion rate            : {p_control*100:.3f}%")
     print(f"  Treated (assigned) conversion rate : {p_treated*100:.3f}%")
-    print(f"  ITT (absolute)                     : {itt_abs*100:.4f} pp")
+    print(f"  ITT (absolute)                     : {itt_abs*100:.4f} pp"
+          f"   95% CI [{ci['itt_lo']*100:.4f}, {ci['itt_hi']*100:.4f}]")
     print(f"  Compliance E[D|Z=1] (treated exposed): {exposure_treated*100:.2f}%")
     print(f"  Control exposure E[D|Z=0]          : {exposure_control*100:.4f}%")
     print(f"  First-stage denominator            : {first_stage*100:.2f} pp")
     if one_sided_ok:
         print("  (control exposure ~0 -> denominator = compliance, as expected)")
     print("\n  -- Effect for an actually-exposed user (absolute) --")
-    print(f"  LATE  (Wald, defensible)           : {late_abs*100:.4f} pp")
+    print(f"  LATE  (Wald, defensible)           : {late_abs*100:.4f} pp"
+          f"   95% CI [{ci['late_lo']*100:.4f}, {ci['late_hi']*100:.4f}]")
     print(f"  Naive (exposed - control, biased)  : {naive_abs*100:.4f} pp")
     print(f"  => Naive overstates the per-exposed effect by "
           f"~{naive_abs/late_abs:.1f}x")
@@ -146,8 +213,9 @@ def main():
     print(" instrument, so it avoids the self-selection that inflates the naive")
     print(" exposed-vs-control comparison. The number is causal only under the")
     print(" assumptions checked above (relevance, exclusion, one-sided")
-    print(" noncompliance). ITT (Step 1) remains the effect of assignment;")
-    print(" LATE is the effect on compliers - both are honest, the naive is not.")
+    print(" noncompliance); the 95% CIs quantify sampling uncertainty. ITT")
+    print(" (Step 1) remains the effect of assignment; LATE is the effect on")
+    print(" compliers - both are honest, the naive number is not.")
     print("=" * 56)
 
 
