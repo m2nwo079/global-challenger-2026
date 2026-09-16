@@ -10,6 +10,7 @@
 # ============================================================
 
 import os
+import shutil
 import urllib.request
 
 import pandas as pd
@@ -31,18 +32,70 @@ DATA_PATH = os.path.join(DATA_DIR, "criteo-uplift-v2.1.csv.gz")
 EXPECTED_CONVERSION_LIFT_PCT = 59.45  # relative lift on conversions (%)
 EXPECTED_VISIT_LIFT_PCT = 27.07       # relative lift on visits (%)
 
+# Integrity check for the downloaded file. gzip streams start with the magic
+# bytes 1f 8b; the real dataset is ~300 MB, so anything tiny is an error page
+# or a truncated download, not the data.
+GZIP_MAGIC = b"\x1f\x8b"
+MIN_VALID_BYTES = 1_000_000  # 1 MB floor; the real file is ~300 MB
+
 
 # ------------------------------------------------------------
 # 1. Download the data (only once; skipped if it already exists)
 # ------------------------------------------------------------
+def _is_valid_gzip(path):
+    """Cheap integrity check: gzip magic bytes + a plausible size.
+
+    Guards against a half-finished download or an HTML error page that got
+    saved under the data filename. Not a full CRC check (that would read the
+    whole 300 MB), just enough to catch the common failure modes."""
+    try:
+        if os.path.getsize(path) < MIN_VALID_BYTES:
+            return False
+        with open(path, "rb") as f:
+            return f.read(2) == GZIP_MAGIC
+    except OSError:
+        return False
+
+
 def download_data():
     os.makedirs(DATA_DIR, exist_ok=True)
+
+    # Reuse an existing file only if it passes the integrity check, so a
+    # previously-corrupted download self-heals instead of being cached forever.
     if os.path.exists(DATA_PATH):
-        print(f"[1/3] Data already present: {DATA_PATH} (skipping download)")
-        return
+        if _is_valid_gzip(DATA_PATH):
+            print(f"[1/3] Data already present: {DATA_PATH} (skipping download)")
+            return
+        print(f"[1/3] Existing file looks corrupt; re-downloading: {DATA_PATH}")
+        os.remove(DATA_PATH)
+
     print("[1/3] Downloading data... (~300MB, may take a few minutes)")
-    urllib.request.urlretrieve(DATA_URL, DATA_PATH)
-    print("      Done!")
+    # Download to a temporary file in the SAME directory, then atomically
+    # rename into place. If the process is interrupted (Ctrl-C, network drop,
+    # crash), only the .part file is left behind - DATA_PATH is never a
+    # partial file, so the next run won't mistake a truncated download for a
+    # complete one.
+    tmp_path = DATA_PATH + ".part"
+    try:
+        req = urllib.request.Request(
+            DATA_URL, headers={"User-Agent": "global-challenger-2026/1.0"})
+        # timeout applies per socket read: a stalled connection raises, but a
+        # slow-yet-progressing download is not cut off.
+        with urllib.request.urlopen(req, timeout=60) as resp, \
+                open(tmp_path, "wb") as out:
+            shutil.copyfileobj(resp, out)
+        # Verify what we actually received before committing it to DATA_PATH.
+        if not _is_valid_gzip(tmp_path):
+            raise ValueError(
+                "downloaded file failed the gzip/size check "
+                "(the server may have returned an error page)")
+        os.replace(tmp_path, DATA_PATH)   # atomic on the same filesystem
+        print("      Done!")
+    finally:
+        # On success os.replace already moved the temp file, so this is a
+        # no-op; on any failure it removes the partial download.
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 # ------------------------------------------------------------
