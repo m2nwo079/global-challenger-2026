@@ -159,11 +159,11 @@ body.en.pro [data-en-pro]{display:revert}
       <input type="range" id="comp" min="1" max="15" step="0.1" value="3.6" oninput="updateSlider()">
       <div class="readout">
         <div class="box late">
-          <div class="rn"><span id="lateVal">3.19</span> pp</div>
+          <div class="rn"><span id="lateVal">3.20</span> pp</div>
           <div class="rl"><span data-ko data-ko-easy>정직한 값 · 광고 본 사람 1명당 실제 효과</span><span data-ko-pro>LATE · 노출자 1인당 정직한 효과 (도구변수)</span><span data-en data-en-easy>Honest value · real effect per person who saw it</span><span data-en-pro>LATE · honest per-exposed effect (IV)</span></div>
         </div>
         <div class="box naive">
-          <div class="rn">+<span id="naiveVal">2672</span>%</div>
+          <div class="rn">+<span id="naiveVal">2676</span>%</div>
           <div class="rl"><span data-ko data-ko-easy>부풀린 값 · 광고 본 사람만 그냥 비교</span><span data-ko-pro>Naive · 노출자를 그냥 비교한 부풀린 값</span><span data-en data-en-easy>Inflated value · just comparing viewers</span><span data-en-pro>Naive · inflated exposed-vs-control</span></div>
         </div>
       </div>
@@ -177,10 +177,11 @@ body.en.pro [data-en-pro]{display:revert}
     <p class="muted"><span data-ko data-ko-easy>같은 데이터를 세 가지로 계산했습니다. 두 개는 정직하고(서로 다른 질문에 답함), 하나는 부풀려진 거짓입니다.</span><span data-ko-pro>같은 데이터, 세 가지 계산. 두 개는 정직하고(다른 질문에 답함), 하나는 거짓입니다.</span><span data-en data-en-easy>Same data, three ways. Two are honest (they answer different questions); one is inflated.</span><span data-en-pro>Same data, three computations. Two are honest (answering different questions); one is not.</span></p>
     <div class="bars">
       <div class="bar"><span class="bl">ITT</span><div class="track"><div class="fill itt" style="width:2.2%"></div></div><span class="bv">+59.4%</span></div>
-      <div class="bar"><span class="bl">LATE</span><div class="track"><div class="fill late" style="width:6%"></div></div><span class="bv" id="bLate">+165%</span></div>
-      <div class="bar"><span class="bl">Naive</span><div class="track"><div class="fill naive" style="width:100%"></div></div><span class="bv">+2672%</span></div>
+      <div class="bar"><span class="bl">LATE</span><div class="track"><div class="fill late" id="fillLate"></div></div><span class="bv" id="bLate"></span></div>
+      <div class="bar"><span class="bl">Naive</span><div class="track"><div class="fill naive" id="fillNaive"></div></div><span class="bv" id="bNaive"></span></div>
     </div>
     <p class="note"><span data-ko data-ko-easy>ITT는 “광고를 튼 것”의 효과, LATE는 “실제로 본 사람”의 효과 — 둘 다 정직합니다. Naive만 “원래 살 사람들”이 섞여 부풀려진 거짓입니다.</span><span data-ko-pro>ITT는 “배정”의 효과, LATE는 “실제 노출자”의 효과 — 둘 다 정직합니다. Naive만 자기선택 편향으로 부풀려진 거짓입니다.</span><span data-en data-en-easy>ITT is the effect of showing ads; LATE the effect on people who saw them — both honest. Only naive is inflated by mixing in people who would have bought anyway.</span><span data-en-pro>ITT is the effect of assignment; LATE the effect on the exposed — both honest. Only naive is inflated by self-selection.</span></p>
+    <p class="note"><span data-ko data-ko-easy>“45배”는 부풀린 값을 “광고를 튼 효과(ITT)”와 견준 것입니다. 같은 “본 사람 1명당” 기준(LATE)과 견주면 약 1.6배 차이입니다 — 둘 다 같은 거짓을 다른 잣대로 잰 것입니다.</span><span data-ko-pro>“45×”는 Naive를 ITT(배정 기준)와 비교한 값이고, 동일한 노출자 기준(LATE)과 비교하면 약 1.6×입니다. 서로 다른 추정량을 비교한 것이므로 두 배율을 구분해야 합니다.</span><span data-en data-en-easy>The "45×" compares the inflated number against the effect of showing ads (ITT). Against the same per-exposed benchmark (LATE) it is only ~1.6×.</span><span data-en-pro>The "45×" compares naive against ITT (per-assigned); against the matching per-exposed estimand (LATE) it is ~1.6×. The two ratios measure different things.</span></p>
   </section>
 
   <section>
@@ -208,7 +209,7 @@ body.en.pro [data-en-pro]{display:revert}
       </tr></thead>
       <tbody>
         <tr><td class="mono">1 · ITT</td><td><span data-ko>광고를 튼 효과?</span><span data-en>Effect of showing ads?</span></td><td>+59.4% <span class="muted">(=59.45%)</span></td></tr>
-        <tr><td class="mono">2 · Naive</td><td><span data-ko>본 사람만 비교하면?</span><span data-en>Compare viewers only?</span></td><td>+2672% <span class="muted">(~45×)</span></td></tr>
+        <tr><td class="mono">2 · Naive</td><td><span data-ko>본 사람만 비교하면?</span><span data-en>Compare viewers only?</span></td><td>+2676% <span class="muted">(~45×)</span></td></tr>
         <tr><td class="mono">3 · LATE</td><td><span data-ko>본 사람의 효과?</span><span data-en>Effect on viewers?</span></td><td><span data-ko>부풀림 없이 복원</span><span data-en>recovered, no inflation</span></td></tr>
         <tr><td class="mono">4 · Qini</td><td><span data-ko>누구를 타깃?</span><span data-en>Whom to target?</span></td><td><span data-ko>상위 소수에 효과 집중</span><span data-en>effect in a targetable few</span></td></tr>
       </tbody>
@@ -221,9 +222,19 @@ body.en.pro [data-en-pro]{display:revert}
 </div>
 
 <script>
-const ITT_ABS_PP = 0.115;
-const NAIVE_REL = 2672;
-const ITT_REL = 59.4;
+// Values below are computed from the Criteo data by the analysis scripts
+// (analyze.py / naive.py / late.py) and copied here for this static page.
+//   control conv 0.1938%, treated conv 0.3089%  -> ITT 0.1152 pp (+59.45%)
+//   exposed conv 5.3784%  vs control 0.1938%     -> naive +2675.8% (~+2676%)
+//   first stage (compliance) 3.604%; LATE 0.1152 / 0.03604 = 3.196 pp
+//   compliers' control-counterfactual baseline = 5.3784% - 3.196 pp = 2.182%
+//   -> relative LATE = 3.196 / 2.182 = +146.5%  (per-exposed, honest)
+// A relative LATE must use the compliers' OWN baseline (2.182%), NOT the
+// overall control rate (0.194%); dividing by the latter overstates it ~10x.
+const ITT_ABS_PP = 0.1152;   // ITT, absolute (pp)
+const ITT_REL    = 59.45;    // ITT, relative lift (%)
+const NAIVE_REL  = 2676;     // naive exposed-vs-control, relative lift (%)
+const LATE_REL   = 146.5;    // LATE relative to the compliers' own baseline (%)
 const QINI = {visit:{auc:'0.0855', pts:[0,.28,.46,.58,.66,.72,.77,.82,.86,.90,.94,.97,1.0]},
               conversion:{auc:'0.1184', pts:[0,.32,.50,.60,.68,.74,.79,.83,.87,.91,.94,.97,1.0]}};
 
@@ -240,15 +251,25 @@ function setLevel(v){
   document.getElementById('btEasy').classList.toggle('on', v==='easy');
   document.getElementById('btPro').classList.toggle('on', v==='pro');
 }
+function initBars(){
+  // Draw the "three ways" bars from the constants above, so the labels and
+  // widths cannot drift from the numbers they represent. Widths are linear in
+  // the relative lift (Naive = 100%). ITT stays static in the markup.
+  document.getElementById('bLate').textContent  = '+' + Math.round(LATE_REL) + '%';
+  document.getElementById('bNaive').textContent = '+' + NAIVE_REL + '%';
+  document.getElementById('naiveVal').textContent = NAIVE_REL;
+  document.getElementById('fillLate').style.width  = (LATE_REL / NAIVE_REL * 100).toFixed(1) + '%';
+  document.getElementById('fillNaive').style.width = '100%';
+}
 function updateSlider(){
   const c = parseFloat(document.getElementById('comp').value);
   document.getElementById('compVal').textContent = c.toFixed(1);
+  // LATE (absolute, pp): the same ITT spread over the exposed share, so fewer
+  // exposed -> larger per-exposed effect. Shown in pp only; we do NOT fabricate
+  // a relative % as the slider moves, because the compliers' baseline (the
+  // correct denominator) is not identified at hypothetical exposure shares.
   const late = (ITT_ABS_PP / (c/100));
   document.getElementById('lateVal').textContent = late.toFixed(2);
-  const lateRel = (late/ITT_ABS_PP)*ITT_REL;
-  document.getElementById('bLate').textContent = '+'+Math.round(lateRel)+'%';
-  const w = Math.max(2, Math.min(100, (lateRel/NAIVE_REL)*100));
-  document.querySelector('.fill.late').style.width = w+'%';
 }
 function drawQini(key){
   const q=QINI[key]; const pts=q.pts; const W=680,H=300,pad=44;
@@ -275,6 +296,7 @@ function setQini(key){
   document.getElementById('tabConv').classList.toggle('on', key==='conversion');
   drawQini(key);
 }
+initBars();
 updateSlider();
 drawQini('visit');
 </script>
