@@ -65,8 +65,12 @@ Step 4 runs on **Google Colab**, not locally (it needs more RAM). Upload
   `MODEL_SIZE` at the top of the notebook; start small, then scale up.
 - **The training cell is the slow one** (it fits 4 models: treated+control x
   visit+conversion). Everything else is quick.
-- **`conversion` is rare (~0.3%)**, so its Qini curve is noisier than
-  `visit`'s. A weaker conversion curve is expected, not a bug.
+- **`conversion` is rare (~0.3%)**, so its Qini curve is higher-variance
+  (noisier) than `visit`'s - re-runs move it around more. Do NOT assume its
+  Qini AUC must be *lower* than `visit`'s, though: `qini_auc_score` is not
+  directly comparable across targets with ~16x different prevalence, and on
+  this data the `conversion` AUC can come out higher. Judge each curve by its
+  own shape vs. its random baseline, not by cross-target AUC ranking.
 - Before committing the notebook, clear its outputs (Edit -> Clear all
   outputs) to keep the repo clean; the Qini figure is saved separately as
   `qini_curves.png`.
