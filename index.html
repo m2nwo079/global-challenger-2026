@@ -146,28 +146,28 @@ body.en.pro [data-en-pro]{display:revert}
     <p class="kicker mono">02 · <span data-ko data-ko-easy>흔한 착각</span><span data-ko-pro>The trap</span><span data-en data-en-easy>Common mistake</span><span data-en-pro>The trap</span></p>
     <h2><span data-ko data-ko-easy>“광고 본 사람만” 비교하면 생기는 일</span><span data-ko-pro>노출로 조건화하면 벌어지는 일</span><span data-en data-en-easy>What "only people who saw it" does</span><span data-en-pro>What conditioning on exposure does</span></h2>
     <p class="muted">
-      <span data-ko data-ko-easy>슬라이더로 “실제로 광고를 본 사람의 비율”을 바꿔 보세요. 광고를 본 사람이 적을수록, 정직한 값과 부풀린 값이 얼마나 벌어지는지 보입니다.</span>
-      <span data-ko-pro>슬라이더로 “실제 노출된 비율”을 바꿔 보세요. 노출된 사람이 적을수록(자기선택이 심할수록) 두 값이 어떻게 갈리는지 보입니다.</span>
-      <span data-en data-en-easy>Move the slider to change how many people actually saw the ad. The fewer who saw it, the more the honest number and the inflated number split apart.</span>
-      <span data-en-pro>Move the slider to change the share actually exposed. The fewer are exposed (stronger self-selection), the more the two numbers diverge.</span>
+      <span data-ko data-ko-easy>슬라이더로 “광고를 본 사람 비율”을 바꿔, 정직한 값(LATE)이 어떻게 정해지는지 보세요. 전체 광고 효과(ITT)는 고정이고, 이를 본 사람 비율로 나눈 것이 “본 사람 1명당 정직한 효과”입니다. 오른쪽 부풀린 값은 실측된 고정값이라 움직이지 않습니다.</span>
+      <span data-ko-pro>슬라이더로 노출 비율을 바꾸면 정직한 관계 LATE = ITT ÷ 노출비율이 보입니다. 집계 효과(ITT)는 무작위 배정으로 고정되고, LATE는 이를 노출 비율로 나눈 값입니다. Naive(노출자−대조군)는 실측된 단일 관측값이므로 슬라이더로 변하지 않습니다.</span>
+      <span data-en data-en-easy>Move the slider to change the share who saw the ad and watch how the honest value (LATE) is set. The whole ad effect (ITT) is fixed; divided by the share who saw it, that is the honest effect per viewer. The inflated number on the right is an observed, fixed value, so it does not move.</span>
+      <span data-en-pro>Moving the slider shows the identity honest LATE = ITT ÷ exposure share. Randomization fixes the aggregate effect (ITT); LATE is that divided by the exposure share. The naive (exposed − control) number is a single observed fact, so it stays fixed.</span>
     </p>
     <div class="card">
       <div class="slrow">
         <span><span data-ko data-ko-easy>실제로 광고를 본 사람 비율</span><span data-ko-pro>실제 노출된 비율</span><span data-en data-en-easy>Share who actually saw the ad</span><span data-en-pro>Share actually exposed</span></span>
         <span class="slval"><span id="compVal">3.6</span>%</span>
       </div>
-      <input type="range" id="comp" min="1" max="15" step="0.1" value="3.6" oninput="updateSlider()">
+      <input type="range" id="comp" min="2.3" max="15" step="0.1" value="3.6" oninput="updateSlider()">
       <div class="readout">
         <div class="box late">
           <div class="rn"><span id="lateVal">3.20</span> pp</div>
-          <div class="rl"><span data-ko data-ko-easy>정직한 값 · 광고 본 사람 1명당 실제 효과</span><span data-ko-pro>LATE · 노출자 1인당 정직한 효과 (도구변수)</span><span data-en data-en-easy>Honest value · real effect per person who saw it</span><span data-en-pro>LATE · honest per-exposed effect (IV)</span></div>
+          <div class="rl"><span data-ko data-ko-easy>정직한 값 · 광고 본 사람 1명당 실제 효과 (= 전체 효과 ÷ 본 사람 비율)</span><span data-ko-pro>LATE · 노출자 1인당 정직한 효과 = ITT ÷ 노출비율 (IV)</span><span data-en data-en-easy>Honest value · real effect per viewer (= whole effect ÷ share who saw it)</span><span data-en-pro>LATE · honest per-exposed effect = ITT ÷ exposure share (IV)</span></div>
         </div>
         <div class="box naive">
-          <div class="rn">+<span id="naiveVal">2676</span>%</div>
-          <div class="rl"><span data-ko data-ko-easy>부풀린 값 · 광고 본 사람만 그냥 비교</span><span data-ko-pro>Naive · 노출자를 그냥 비교한 부풀린 값</span><span data-en data-en-easy>Inflated value · just comparing viewers</span><span data-en-pro>Naive · inflated exposed-vs-control</span></div>
+          <div class="rn"><span id="naiveAbsVal">5.18</span> pp</div>
+          <div class="rl"><span data-ko data-ko-easy>부풀린 값 · 광고 본 사람만 그냥 비교 · 실측 고정</span><span data-ko-pro>Naive · 노출자−대조군 · 실측 관측값(고정)</span><span data-en data-en-easy>Inflated value · just comparing viewers · observed, fixed</span><span data-en-pro>Naive · exposed − control · observed (fixed)</span></div>
         </div>
       </div>
-      <p class="note"><span data-ko data-ko-easy>실제로 광고를 본 사람은 3.6%뿐입니다. 이 지점에서 흔한 비교는 정직한 값보다 약 45배 부풀려집니다.</span><span data-ko-pro>실측 노출 비율은 3.6%입니다. 이 지점에서 Naive는 정직한 ITT보다 약 45배 부풀려집니다.</span><span data-en data-en-easy>Only 3.6% actually saw the ad. There, the common comparison is ~45× the honest number.</span><span data-en-pro>The observed exposure share is 3.6%. There, the naive comparison is ~45× the honest ITT.</span></p>
+      <p class="note"><span data-ko data-ko-easy>실제 노출 비율은 3.6%입니다. 그 지점에서 정직한 값은 약 3.20pp인데, 광고 본 사람만 그냥 비교하면 5.18pp로 더 높습니다. 이 차이(약 1.98pp)는 광고 효과가 아니라 “원래 살 사람들이 광고에 더 노출된” 선택 편향입니다. 슬라이더는 정직한 값만 다시 계산합니다.</span><span data-ko-pro>실측 노출 비율 3.6%에서 정직한 LATE는 약 3.20pp, Naive(노출자−대조군)는 5.18pp입니다. 그 차이(약 1.98pp)는 광고 효과가 아니라 노출자의 자기선택(높은 기저 구매성향)입니다. 슬라이더는 항등식으로 LATE만 재계산하며 관측된 Naive는 고정입니다.</span><span data-en data-en-easy>The real exposure share is 3.6%. There the honest value is about 3.20 pp, while just comparing viewers gives 5.18 pp. That gap (about 1.98 pp) is not ad effect but selection — people likelier to buy anyway were likelier to be shown the ad. The slider only recomputes the honest value.</span><span data-en-pro>At the observed 3.6% exposure, the honest LATE is about 3.20 pp versus the naive 5.18 pp (exposed − control). The ~1.98 pp gap is self-selection (higher baseline propensity among the exposed), not ad effect. The slider rescales LATE only; the observed naive value is fixed.</span></p>
     </div>
   </section>
 
@@ -234,6 +234,7 @@ body.en.pro [data-en-pro]{display:revert}
 const ITT_ABS_PP = 0.1152;   // ITT, absolute (pp)
 const ITT_REL    = 59.45;    // ITT, relative lift (%)
 const NAIVE_REL  = 2676;     // naive exposed-vs-control, relative lift (%)
+const NAIVE_ABS_PP = 5.1846; // naive exposed-vs-control, absolute (pp) - OBSERVED, fixed
 const LATE_REL   = 146.5;    // LATE relative to the compliers' own baseline (%)
 const QINI = {visit:{auc:'0.0855', pts:[0,.28,.46,.58,.66,.72,.77,.82,.86,.90,.94,.97,1.0]},
               conversion:{auc:'0.1184', pts:[0,.32,.50,.60,.68,.74,.79,.83,.87,.91,.94,.97,1.0]}};
@@ -257,17 +258,19 @@ function initBars(){
   // the relative lift (Naive = 100%). ITT stays static in the markup.
   document.getElementById('bLate').textContent  = '+' + Math.round(LATE_REL) + '%';
   document.getElementById('bNaive').textContent = '+' + NAIVE_REL + '%';
-  document.getElementById('naiveVal').textContent = NAIVE_REL;
+  document.getElementById('naiveAbsVal').textContent = NAIVE_ABS_PP.toFixed(2);
   document.getElementById('fillLate').style.width  = (LATE_REL / NAIVE_REL * 100).toFixed(1) + '%';
   document.getElementById('fillNaive').style.width = '100%';
 }
 function updateSlider(){
   const c = parseFloat(document.getElementById('comp').value);
   document.getElementById('compVal').textContent = c.toFixed(1);
-  // LATE (absolute, pp): the same ITT spread over the exposed share, so fewer
-  // exposed -> larger per-exposed effect. Shown in pp only; we do NOT fabricate
-  // a relative % as the slider moves, because the compliers' baseline (the
-  // correct denominator) is not identified at hypothetical exposure shares.
+  // LATE (absolute, pp) = ITT / exposure share: the same fixed aggregate effect
+  // spread over the exposed group, so fewer exposed -> larger per-exposed effect.
+  // Only LATE moves. The naive box is a single observed fact (NAIVE_ABS_PP) and
+  // is intentionally fixed; we do NOT fabricate a naive(share) curve, which is
+  // not identified from one observed exposure share. (By construction the honest
+  // LATE stays below the observed naive, which is why the slider min is 2.3%.)
   const late = (ITT_ABS_PP / (c/100));
   document.getElementById('lateVal').textContent = late.toFixed(2);
 }
