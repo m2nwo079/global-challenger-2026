@@ -47,8 +47,8 @@
 #   reliable here (n in the millions) but would be fragile with a weak first
 #   stage. All inputs are computed from the data, none are hard-coded.
 #
-#  How to run: in the VS Code terminal  ->  python late.py
-#  (Run 'python analyze.py' once first so the data is already downloaded.)
+#  How to run: in the VS Code terminal  ->  python3 late.py
+#  (Run 'python3 analyze.py' once first so the data is already downloaded.)
 # ============================================================
 
 import math
@@ -71,7 +71,7 @@ Z95 = 1.959964
 def load_data():
     if not os.path.exists(DATA_PATH):
         raise SystemExit(
-            "Data file not found. Please run 'python analyze.py' once first."
+            "Data file not found. Please run 'python3 analyze.py' once first."
         )
     print("[1/2] Loading data... (1-2 minutes)")
     cols = ["treatment", "conversion", "exposure"]

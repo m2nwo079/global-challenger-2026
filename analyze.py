@@ -6,15 +6,15 @@
 #   (2) Compares conversion rates between users ASSIGNED to ads vs. control
 #   (3) Reports how much the ad actually caused conversions (ITT).
 #
-#  How to run: in the VS Code terminal  ->  python analyze.py
+#  How to run: in the VS Code terminal  ->  python3 analyze.py
 # ============================================================
 
+import math
 import os
 import shutil
 import urllib.request
 
 import pandas as pd
-from statsmodels.stats.proportion import proportions_ztest
 
 # ------------------------------------------------------------
 # 0. Configuration
@@ -129,10 +129,15 @@ def compute_itt(df, outcome):
     abs_lift = p_trt - p_ctrl               # absolute difference (pp)
     rel_lift = abs_lift / p_ctrl            # relative lift (percent increase)
 
-    # Test whether the difference in rates is unlikely to be chance (z-test)
-    success = [g.loc[1, "sum"], g.loc[0, "sum"]]
-    totals = [g.loc[1, "count"], g.loc[0, "count"]]
-    _, pvalue = proportions_ztest(success, totals)
+    # Two-proportion z-test (pooled variance under H0: equal rates), computed
+    # with the standard library so the project needs no statsmodels dependency.
+    # Numerically identical to statsmodels.proportions_ztest.
+    x_trt, x_ctrl = g.loc[1, "sum"], g.loc[0, "sum"]
+    n_trt, n_ctrl = g.loc[1, "count"], g.loc[0, "count"]
+    p_pool = (x_trt + x_ctrl) / (n_trt + n_ctrl)
+    se = math.sqrt(p_pool * (1 - p_pool) * (1 / n_trt + 1 / n_ctrl))
+    z = (p_trt - p_ctrl) / se
+    pvalue = math.erfc(abs(z) / math.sqrt(2))   # two-sided normal tail
 
     return {
         "outcome": outcome,

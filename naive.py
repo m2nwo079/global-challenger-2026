@@ -12,8 +12,8 @@
 #   the "ad effect" and the lift explodes. This is exactly why last-click
 #   attribution overstates advertising performance.
 #
-#  How to run: in the VS Code terminal  ->  python naive.py
-#  (Run 'python analyze.py' once first so the data is already downloaded.)
+#  How to run: in the VS Code terminal  ->  python3 naive.py
+#  (Run 'python3 analyze.py' once first so the data is already downloaded.)
 # ============================================================
 
 import os
@@ -26,7 +26,7 @@ DATA_PATH = os.path.join("data", "criteo-uplift-v2.1.csv.gz")
 def load_data():
     if not os.path.exists(DATA_PATH):
         raise SystemExit(
-            "Data file not found. Please run 'python analyze.py' once first."
+            "Data file not found. Please run 'python3 analyze.py' once first."
         )
     print("[1/2] Loading data... (1-2 minutes)")
     cols = ["treatment", "conversion", "exposure"]

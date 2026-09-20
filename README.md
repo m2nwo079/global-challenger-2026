@@ -2,7 +2,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)
 ![pandas](https://img.shields.io/badge/pandas-3.0.5-150458?style=flat&logo=pandas&logoColor=white)
-![statsmodels](https://img.shields.io/badge/statsmodels-0.15.0-4051B5?style=flat)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3.2-F7931E?style=flat&logo=scikitlearn&logoColor=white)
 ![scikit-uplift](https://img.shields.io/badge/scikit--uplift-0.5.1-1D9E75?style=flat)
 ![Colab](https://img.shields.io/badge/Google%20Colab-F9AB00?style=flat&logo=googlecolab&logoColor=white)
